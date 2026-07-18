@@ -43,19 +43,27 @@
     "Motion_Event": "Motion Event",
     "Now": "Snapshot",
     "pair": {
-        "manual_add":{
+        "manual_add": {
             "intro": "Enter Connection Details",
             "title": "Add Camera Manually",
             "title2": "Log in to camera",
+            "repair_title": "Repair Connection",
             "username": "Username",
             "password": "Password",
             "ip_address": "IP Address",
             "port": "ONVIF Service Port",
+            "login": "Login",
+            "status": "Status",
             "checking": "Checking connection",
             "try_again": "Try again",
             "correct": "Successful",
             "adding": "Adding device(s)",
 			"add_port": "Add Port to device ID (use for NVR that maps cameras via port numbers)"
         }
+    },
+    "ptz": {
+        "presetValueTitle": "Preset {index}: {name}",
+        "presetTitle": "PTZ Preset ({count} positions)",
+        "presetSubtitle": "Select a preset position"
     }
 }

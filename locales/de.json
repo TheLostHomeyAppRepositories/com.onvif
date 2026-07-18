@@ -41,5 +41,29 @@
     "Only_Push_Supported": "nur Übermitteln unterstützt",
     "Not_Supported": "Nicht unterstützt",
     "Motion_Event": "Bewegung Erkannt",
-    "Now": "Schnappschuss"
+    "Now": "Schnappschuss",
+    "pair": {
+        "manual_add": {
+            "intro": "Verbindungsdetails eingeben",
+            "title": "Kamera manuell hinzufügen",
+            "title2": "Bei der Kamera anmelden",
+            "repair_title": "Verbindung reparieren",
+            "username": "Benutzername",
+            "password": "Passwort",
+            "ip_address": "IP-Adresse",
+            "port": "ONVIF-Service-Port",
+            "login": "Anmelden",
+            "status": "Status",
+            "checking": "Verbindung wird überprüft",
+            "try_again": "Erneut versuchen",
+            "correct": "Erfolgreich",
+            "adding": "Gerät(e) wird/werden hinzugefügt",
+            "add_port": "Port zur Geräte-ID hinzufügen (für NVR, die Kameras über Portnummern zuordnen)"
+        }
+    },
+    "ptz": {
+        "presetValueTitle": "Position {index}: {name}",
+        "presetTitle": "PTZ-Voreinstellung ({count} Positionen)",
+        "presetSubtitle": "Voreingestellte Position auswählen"
+    }
 }

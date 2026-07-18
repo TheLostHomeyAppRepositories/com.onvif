@@ -93,9 +93,9 @@
 
     <!-- Tab links -->
     <div class="tab">
-        <button class="tablinks" onclick="setPage(event, 'settings')" id="defaultOpen" title="Settings"><span data-i18n="settings.settings"></span></button>
-        <button class="tablinks" onclick="setPage(event, 'log')" title="Diagnostics Log"><span data-i18n="settings.diagnosticsLog"></span></button>
-        <button class="tablinks" onclick="setPage(event, 'statistics')" title="Statistics"><span data-i18n="settings.statistics"></span></button>
+        <button class="tablinks" onclick="setPage(event, 'settings')" id="defaultOpen" title="Settings" data-i18n-title="settings.settings"><span data-i18n="settings.settings"></span></button>
+        <button class="tablinks" onclick="setPage(event, 'log')" title="Diagnostics Log" data-i18n-title="settings.diagnosticsLog"><span data-i18n="settings.diagnosticsLog"></span></button>
+        <button class="tablinks" onclick="setPage(event, 'statistics')" title="Statistics" data-i18n-title="settings.statistics"><span data-i18n="settings.statistics"></span></button>
     </div>
 
     <!-- SETTINGS PAGE -->
@@ -104,10 +104,10 @@
             <h1 data-i18n="settings.title"></h1>
             <div class="field row">
                 <label class="homey-form-label" for="port" data-i18n="settings.port"></label>
-                <input class="homey-form-input" id="port" type="text" value="" title="Listening Port" placeholder="Listening Port" />
+                <input class="homey-form-input" id="port" type="text" value="" title="Listening Port" placeholder="Listening Port" data-i18n-title="settings.port" data-i18n-placeholder="settings.port" />
             </div>
             <div class="field row">
-                <button class="homey-button-secondary-shadow" id="saveButton" title="Save" data-i18n="settings.save"></button>
+                <button class="homey-button-secondary-shadow" id="saveButton" title="Save" data-i18n-title="settings.save" data-i18n="settings.save"></button>
             </div>
         </fieldset>
     </div>
@@ -116,7 +116,7 @@
     <div id="log" class="tabcontent">
         <div class="field row">
             <label class="homey-form-label" for="logLevel"><span data-i18n="settings.logLevel"></span></label>
-            <select class="homey-form-select" id="logLevel" title="Log Level" aria-label="Log Level">
+            <select class="homey-form-select" id="logLevel" title="Log Level" aria-label="Log Level" data-i18n-title="settings.logLevel" data-i18n-aria-label="settings.logLevel">
                 <option value=0 data-i18n="settings.logLevelErrorsOnly"></option>
                 <option value=1 data-i18n="settings.logLevelBasic"></option>
                 <option value=2 data-i18n="settings.logLevelDetailed"></option>
@@ -125,12 +125,12 @@
         </div>
         <div class="field row">
             <label class="homey-form-label"  for="email"><span data-i18n="settings.email"></span></label>
-            <input class="homey-form-input" id="email" type="text" value="" title="Email Address or Forum ID" placeholder="Email Address or Forum ID" />
+            <input class="homey-form-input" id="email" type="text" value="" title="Email Address or Forum ID" placeholder="Email Address or Forum ID" data-i18n-title="settings.email" data-i18n-placeholder="settings.email" />
             <P></P>
         </div>
-        <p><button class="homey-button-secondary-shadow" id="clearLog" title="Clear Log"><span data-i18n="settings.ClearLog"></span></button> <button class="homey-button-secondary-shadow" id="sendLog" title="Send Log"><span data-i18n="settings.SendLog"></span></button></p>
+        <p><button class="homey-button-secondary-shadow" id="clearLog" title="Clear Log" data-i18n-title="settings.ClearLog"><span data-i18n="settings.ClearLog"></span></button> <button class="homey-button-secondary-shadow" id="sendLog" title="Send Log" data-i18n-title="settings.SendLog"><span data-i18n="settings.SendLog"></span></button></p>
         <div class="field row">
-            <textarea id="diagLog" title="Diagnostics Log" placeholder="Diagnostics Log"></textarea>
+            <textarea id="diagLog" title="Diagnostics Log" placeholder="Diagnostics Log" data-i18n-title="settings.diagnosticsLog" data-i18n-placeholder="settings.diagnosticsLog"></textarea>
         </div>
     </div>
 
@@ -139,7 +139,7 @@
         <div class="stats-card">
             <div class="stats-title" data-i18n="settings.statsPeakRateTitle"></div>
             <div id="statsPeakRate" data-i18n="settings.statsPeakRateNone"></div>
-            <button class="homey-button-secondary-shadow" id="clearPeakButton" title="Reset Peak" data-i18n="settings.statsClearPeak"></button>
+            <button class="homey-button-secondary-shadow" id="clearPeakButton" title="Reset Peak" data-i18n-title="settings.statsClearPeak" data-i18n="settings.statsClearPeak"></button>
         </div>
         <div class="stats-card">
             <div class="stats-title" data-i18n="settings.statsRateUpdatesTitle"></div>
@@ -202,6 +202,25 @@
             i18nText.saveSuccess = Homey.__('settings.saveSuccess');
             i18nText.sendLogConfirm = Homey.__('settings.sendLogConfirm');
             i18nText.sendLogSuccess = Homey.__('settings.sendLogSuccess');
+        }
+
+        function applyLocalizedAttributes(Homey)
+        {
+            var attributeMap = {
+                'data-i18n-title': 'title',
+                'data-i18n-placeholder': 'placeholder',
+                'data-i18n-aria-label': 'aria-label'
+            };
+
+            Object.keys(attributeMap).forEach(function(dataAttribute)
+            {
+                var targetAttribute = attributeMap[dataAttribute];
+                var elements = document.querySelectorAll('[' + dataAttribute + ']');
+                for (var i = 0; i < elements.length; i++)
+                {
+                    elements[i].setAttribute(targetAttribute, Homey.__(elements[i].getAttribute(dataAttribute)));
+                }
+            });
         }
 
         function renderThrottling(throttling)
@@ -331,6 +350,7 @@
             // Tell Homey we're ready to be displayed
             Homey.ready();
             initLocalizedText(Homey);
+            applyLocalizedAttributes(Homey);
             document.title = Homey.__('settings.pageTitle');
 
             document.getElementById("defaultOpen").click();

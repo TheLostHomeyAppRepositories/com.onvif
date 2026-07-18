@@ -34,12 +34,36 @@
         "sendLogConfirm": "Inviare il contenuto del log allo sviluppatore?",
         "sendLogSuccess": "Log inviato con successo"
     },
-    "Push_Pull_Supported": "Push and Pull supportato:, ",
-    "Using_Pull": "Utilzza Pull,",
-    "Using_Push": "Utilizza Push,",
-    "Only_Pull_Supported": "Solo Pull supportato,",
-    "Only_Push_Supported": "Solo Push supportato,",
-    "Not_Supported": "Non supportato,",
-    "Motion_Event": "Evento Movimento,",
-    "Now": "Istantanea"
+    "Push_Pull_Supported": "Push e Pull supportati: ",
+    "Using_Pull": "Utilizza Pull",
+    "Using_Push": "Utilizza Push",
+    "Only_Pull_Supported": "Solo Pull supportato",
+    "Only_Push_Supported": "Solo Push supportato",
+    "Not_Supported": "Non supportato",
+    "Motion_Event": "Evento movimento",
+    "Now": "Istantanea",
+    "pair": {
+        "manual_add": {
+            "intro": "Inserisci i dettagli di connessione",
+            "title": "Aggiungi telecamera manualmente",
+            "title2": "Accedi alla telecamera",
+            "repair_title": "Ripara connessione",
+            "username": "Nome utente",
+            "password": "Password",
+            "ip_address": "Indirizzo IP",
+            "port": "Porta del servizio ONVIF",
+            "login": "Accedi",
+            "status": "Stato",
+            "checking": "Verifica connessione",
+            "try_again": "Riprova",
+            "correct": "Operazione riuscita",
+            "adding": "Aggiunta dispositivo/i",
+            "add_port": "Aggiungi la porta all'ID dispositivo (usa per NVR che mappano le telecamere tramite numero di porta)"
+        }
+    },
+    "ptz": {
+        "presetValueTitle": "Posizione {index}: {name}",
+        "presetTitle": "Posizione preimpostata PTZ ({count} posizioni)",
+        "presetSubtitle": "Seleziona una posizione preimpostata"
+    }
 }

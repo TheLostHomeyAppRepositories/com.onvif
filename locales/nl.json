@@ -41,5 +41,29 @@
     "Only_Push_Supported": "Alleen Push ondersteuning",
     "Not_Supported": "Wordt niet ondersteund",
     "Motion_Event": "Beweging",
-    "Now": "Snapshot"
+    "Now": "Snapshot",
+    "pair": {
+        "manual_add": {
+            "intro": "Voer verbindingsgegevens in",
+            "title": "Camera handmatig toevoegen",
+            "title2": "Inloggen op camera",
+            "repair_title": "Verbinding herstellen",
+            "username": "Gebruikersnaam",
+            "password": "Wachtwoord",
+            "ip_address": "IP-adres",
+            "port": "ONVIF-servicepoort",
+            "login": "Inloggen",
+            "status": "Status",
+            "checking": "Verbinding controleren",
+            "try_again": "Opnieuw proberen",
+            "correct": "Succesvol",
+            "adding": "Appara(a)t(en) toevoegen",
+            "add_port": "Poort toevoegen aan apparaat-ID (gebruik voor NVR die camera's via poortnummers toewijzen)"
+        }
+    },
+    "ptz": {
+        "presetValueTitle": "Preset {index}: {name}",
+        "presetTitle": "PTZ-preset ({count} posities)",
+        "presetSubtitle": "Selecteer een presetpositie"
+    }
 }

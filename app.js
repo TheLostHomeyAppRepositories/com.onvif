@@ -1571,17 +1571,17 @@ class MyApp extends Homey.App
 
     async getPTZStatus(camObj) {
         try {
-            // Vérifier les capacités PTZ de la caméra
+            // Check camera PTZ capabilities
             const capabilities = await this.getCapabilities(camObj);
             if (!capabilities || !capabilities.PTZ) {
-                this.updateLog('Cette caméra ne supporte pas le PTZ', 0);
+                this.updateLog('This camera does not support PTZ', 0);
                 return false;
             }
 
-            // Les préréglages sont gérés directement par la librairie ONVIF
+            // Presets are handled directly by the ONVIF library
             return true;
         } catch (err) {
-            this.updateLog('Erreur lors de la vérification PTZ: ' + err.message, 0);
+            this.updateLog('Error while checking PTZ support: ' + err.message, 0);
             return false;
         }
     }

@@ -14,6 +14,20 @@ const {
 	createEventSpecialHandlers
 } = require('./event-routing');
 
+const APP_LOCALES = {
+	en: require('../../locales/en.json'),
+	da: require('../../locales/da.json'),
+	de: require('../../locales/de.json'),
+	fr: require('../../locales/fr.json'),
+	it: require('../../locales/it.json'),
+	ko: require('../../locales/ko.json'),
+	nl: require('../../locales/nl.json'),
+	no: require('../../locales/no.json'),
+	pl: require('../../locales/pl.json'),
+	ru: require('../../locales/ru.json'),
+	sv: require('../../locales/sv.json')
+};
+
 const notificationMap = {
 	'RuleEngine/CellMotionDetector/Motion:IsMotion': ['MOTION'],
 	'RuleEngine/FieldDetector/ObjectsInside:IsInside': ['ANALYTICSSERVICE', 'OBJECTSINSIDE'],
@@ -51,6 +65,26 @@ const EVENT_RATE_LIMIT_WINDOW_MS = 5000;
 const MAX_EVENTS_PER_WINDOW = 100;
 const MAX_CONCURRENT_EVENT_HANDLERS = 8;
 const EVENT_FLOOD_WARNING_INTERVAL_MS = 15000;
+
+function getLocaleText(locale, key)
+{
+	return key.split('.').reduce((value, part) => (value && value[part] !== undefined ? value[part] : undefined), locale);
+}
+
+function formatLocaleText(text, replacements)
+{
+	return Object.keys(replacements || {}).reduce((value, key) => value.replace(new RegExp('\\{' + key + '\\}', 'g'), replacements[key]), text);
+}
+
+function getTranslatedText(key, replacements)
+{
+	return Object.keys(APP_LOCALES).reduce((translations, language) =>
+	{
+		const text = getLocaleText(APP_LOCALES[language], key) || getLocaleText(APP_LOCALES.en, key) || key;
+		translations[language] = formatLocaleText(text, replacements);
+		return translations;
+	}, {});
+}
 
 class CameraDevice extends Homey.Device
 {
@@ -2647,10 +2681,7 @@ class CameraDevice extends Homey.Device
 					// Convert presets to appropriate format for capability options
 					const presetValues = Object.entries(presets).map(([name, token], index) => ({
 						id: String(token), // Convert token to chain
-						title: {
-							en: `Preset ${index + 1}: ${name}`,
-							fr: `Position ${index + 1}: ${name}`
-						}
+						title: getTranslatedText('ptz.presetValueTitle', { index: String(index + 1), name })
 					}));
 
 					this.homey.app.updateLog(`Presets found (${this.name}): ${presetValues.length}`, 1);
@@ -2658,14 +2689,8 @@ class CameraDevice extends Homey.Device
 					// Update capability options with the correct number of presets
 					this.setCapabilityOptions('ptz_preset', {
 						values: presetValues,
-						title: {
-							en: `PTZ Preset (${presetValues.length} positions)`,
-							fr: `Positions PTZ (${presetValues.length} positions)`
-						},
-						subtitle: {
-							en: "Select a preset position",
-							fr: "Sélectionner une position préréglée"
-						}
+						title: getTranslatedText('ptz.presetTitle', { count: String(presetValues.length) }),
+						subtitle: getTranslatedText('ptz.presetSubtitle')
 					}).catch(err =>
 					{
 						this.homey.app.updateLog(`Error updating preset options: ${err.message}`, 0);

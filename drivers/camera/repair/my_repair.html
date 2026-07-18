@@ -1,30 +1,56 @@
 </br>
-<p data-i18n="pair.manual_add.intro" style="text-align:center;"></p>
+<style>
+    .repair-intro { text-align: center; }
+    .repair-form { text-align: left; }
+    .repair-input-spaced { margin-top: 3px; }
+    .repair-submit { margin: 15px; padding: 10px; text-align: center; color: white; background-color: DodgerBlue; border-radius: 10px; }
+</style>
+</br>
+<p class="repair-intro" data-i18n="pair.manual_add.intro"></p>
 
-<form id="form" name="form" onsubmit="return getForm()" action="javascript:void(0);" method="post" style="text-align:left;">
+<form id="form" name="form" class="repair-form" onsubmit="return getForm()" action="javascript:void(0);" method="post">
     <div class="form-group">
         <label for="username" data-i18n="pair.manual_add.username"></label>
-        <input type="text" name="username" id="username" />
+        <input type="text" name="username" id="username" title="Username" data-i18n-title="pair.manual_add.username" />
         </br>
         <label for="password" data-i18n="pair.manual_add.password"></label>
-        <input type="password" name="password" id="password" style="margin-top: 3px;" />
+        <input type="password" name="password" id="password" class="repair-input-spaced" title="Password" data-i18n-title="pair.manual_add.password" />
         </br>
         <label for="ip_address" data-i18n="pair.manual_add.ip_address"></label>
-        <input type="text" name="ip_address" id="ip_address" style="margin-top: 3px;" />
+        <input type="text" name="ip_address" id="ip_address" class="repair-input-spaced" title="IP Address" data-i18n-title="pair.manual_add.ip_address" />
         </br>
         <label for="port" data-i18n="pair.manual_add.port"></label>
-        <input type="text" name="port" id="port" style="margin-top: 3px;" />
+        <input type="text" name="port" id="port" class="repair-input-spaced" title="Port" data-i18n-title="pair.manual_add.port" />
         </br>
-        <input type="submit" id="submit" value="Login" style="margin: 15px; padding: 10px; text-align:center; color: white; background-color: DodgerBlue;border-radius: 10px" />
+        <input type="submit" id="submit" class="repair-submit" data-i18n-value="pair.manual_add.login" />
         </br>
         </br>
-        <input type="text" id="status" readonly />
+        <input type="text" id="status" readonly title="Status" data-i18n-title="pair.manual_add.status" />
     </div>
 </form>
 
 
 <script type="text/javascript">
-    Homey.setTitle("Repair Connection");
+    function localizeAttributes()
+    {
+        var attributeMap = {
+            'data-i18n-title': 'title',
+            'data-i18n-value': 'value'
+        };
+
+        Object.keys(attributeMap).forEach(function(dataAttribute)
+        {
+            var targetAttribute = attributeMap[dataAttribute];
+            var elements = document.querySelectorAll('[' + dataAttribute + ']');
+            for (var i = 0; i < elements.length; i++)
+            {
+                elements[i].setAttribute(targetAttribute, __(elements[i].getAttribute(dataAttribute)));
+            }
+        });
+    }
+
+    localizeAttributes();
+    Homey.setTitle(__('pair.manual_add.repair_title'));
 
     Homey.emit('repair_connection_setup', {},
         function(err, result)
@@ -82,7 +108,7 @@
                 {
                     console.log('authentication succeeded');
                     document.getElementById('submit').value = __('pair.manual_add.correct');
-                    Homey.alert("Successful", null, function(e, ok)
+                    Homey.alert(__('pair.manual_add.correct'), null, function(e, ok)
                     {
                         Homey.done();
                     });

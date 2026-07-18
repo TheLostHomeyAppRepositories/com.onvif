@@ -471,6 +471,6 @@
 		"en": "Added guard around potential crash scenarios when deleting devices."
 	},
 	"2.0.70": {
-		"en": "The app now checks if the primary live stream is H.265 and selects the second stream if it is as Homey doesn't support H.265."
+		"en": "The app now checks if the primary live stream is H.265 and selects the second stream if it is as Homey doesn't support H.265. Fix for user live stream URI not being used on app startup"
 	}
 }

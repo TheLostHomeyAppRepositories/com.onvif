@@ -133,7 +133,7 @@ class CameraDevice extends Homey.Device
 		this.channel = settings.channel;
 		this.token = settings.token;
 		this.userSnapUri = settings.userSnapUri;
-		this.userliveUri = settings.userLiveUri;
+		this.userLiveUri = settings.userLiveUri;
 		this.eventTN = this.getEventTN(settings, false);
 		this.eventObjectID = settings.objectID;
 		if (this.eventTN !== 'RuleEngine/FieldDetector/ObjectsInside:IsInside')

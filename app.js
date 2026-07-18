@@ -1020,7 +1020,41 @@ class MyApp extends Homey.App
 	async getStreamURL(camObj, profileToken)
 	{
 		const promiseGetStreamUri = promisify(camObj.getStreamUri).bind(camObj);
-		return promiseGetStreamUri({});
+
+        const normalizeEncoding = (value) => String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const isH265 = (value) =>
+        {
+            const encoding = normalizeEncoding(value);
+            return encoding === 'H265' || encoding === 'HEVC';
+        };
+        const isH264 = (value) =>
+        {
+            const encoding = normalizeEncoding(value);
+            return encoding === 'H264' || encoding === 'AVC';
+        };
+
+        if (profileToken)
+        {
+            return promiseGetStreamUri({ profileToken: String(profileToken) });
+        }
+
+        const activeSourceEncoding = camObj?.activeSource?.encoding;
+        if (!isH265(activeSourceEncoding))
+        {
+            return promiseGetStreamUri({});
+        }
+
+        const activeSources = Array.isArray(camObj?.activeSources) ? camObj.activeSources : [];
+        const h264Source = activeSources.find((source) => isH264(source?.encoding) && source?.profileToken);
+
+        if (h264Source)
+        {
+            this.updateLog('Primary stream is H265/HEVC, switching to H264 profile token for Homey live view');
+            return promiseGetStreamUri({ profileToken: String(h264Source.profileToken) });
+        }
+
+        this.updateLog('Primary stream is H265/HEVC and no H264 alternate profile was found; using primary stream', 0);
+        return promiseGetStreamUri({});
 	}
 
     async hasEventTopics(camObj)

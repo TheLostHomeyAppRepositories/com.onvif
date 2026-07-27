@@ -519,6 +519,87 @@ class CameraDevice extends Homey.Device
 		this.homey.app.updateLog('SnapShot error (' + this.getLogDeviceLabel() + '): ' + message, 0);
 	}
 
+	getSnapshotContentType(res)
+	{
+		if (!res || !res.headers)
+		{
+			return '';
+		}
+
+		if (typeof res.headers.get === 'function')
+		{
+			return String(res.headers.get('content-type') || '').toLowerCase();
+		}
+
+		return String(res.headers['content-type'] || '').toLowerCase();
+	}
+
+	isInvalidSnapshotResponse(res)
+	{
+		const contentType = this.getSnapshotContentType(res);
+		if (!contentType)
+		{
+			return false;
+		}
+
+		return contentType.startsWith('text/html') ||
+			contentType.startsWith('text/plain') ||
+			contentType.startsWith('application/json') ||
+			contentType.startsWith('application/xml') ||
+			contentType.startsWith('text/xml');
+	}
+
+	markInvalidSnapshotResponse(res, name)
+	{
+		const contentType = this.getSnapshotContentType(res) || 'unknown';
+		const responseUrl = res && res.url ? ', URL: ' + res.url : '';
+		this.homey.app.updateLog('SnapShot invalid response (' + this.getLogDeviceLabel() + ') [' + name + ']: Content-Type: ' + contentType + responseUrl, 0);
+
+		if (res && res.body && typeof res.body.destroy === 'function')
+		{
+			res.body.destroy();
+		}
+
+		return {
+			'ok': false,
+			'status': res && res.status,
+			'statusText': 'invalid_snapshot_content_type: ' + contentType
+		};
+	}
+
+	buildAuthenticatedStreamUrl(streamUrl)
+	{
+		if (!streamUrl)
+		{
+			return streamUrl;
+		}
+
+		let parsedUrl;
+		try
+		{
+			parsedUrl = new URL(streamUrl);
+		}
+		catch (err)
+		{
+			this.homey.app.updateLog('Invalid live stream URL (' + this.getLogDeviceLabel() + '): ' + (err?.message || err), 0);
+			return streamUrl;
+		}
+
+		if (parsedUrl.username || parsedUrl.password)
+		{
+			return parsedUrl.toString();
+		}
+
+		if (parsedUrl.searchParams.get('user'))
+		{
+			return parsedUrl.toString();
+		}
+
+		parsedUrl.username = this.username || '';
+		parsedUrl.password = this.password || '';
+		return parsedUrl.toString();
+	}
+
 	async safeSetWarning(warning)
 	{
 		if (this.isDeleting)
@@ -2155,19 +2236,10 @@ class CameraDevice extends Homey.Device
 					}
 
 					this.homey.app.updateLog(`Live video stream to URL: ${newUrl}`);
+					newUrl = this.buildAuthenticatedStreamUrl(newUrl);
 
-					// If the url doesn't contain user=<username> then add it
-					if (!newUrl.includes(`user=${this.username}`))
-					{
-						// insert the username and password just after the protocol in the format [username:password@<host>]
-						// URL encode username and password
-						const auth = encodeURIComponent(this.username) + ':' + encodeURIComponent(this.password) + '@';
-
-						const host = newUrl.split('/')[2];
-						newUrl = newUrl.replace(host, auth + host);
-					}
-
-					this.homey.app.updateLog(`Setting Live video stream to ${newUrl}`);
+					this.homey.app.updateLog(`Setting Live video stream to ${newUrl.replace(this.password, 'YOUR_PASSWORD')}`);
+					this.homey.app.updateLog('Live video stream URL registered with Homey; playback is validated by the client when opened', 1);
 					return { url: newUrl };
 				});
 				this.setCameraVideo('NowVideo', 'Live Video', this.video).catch(this.err);
@@ -2396,6 +2468,10 @@ class CameraDevice extends Homey.Device
 					this.homey.app.updateLog('Fetching (' + this.name + ') ' + name + ' image with no Auth from: ' + this.homey.app.varToString(this.snapUri).replace(this.password, 'YOUR_PASSWORD'), 1);
 					res = await fetch(this.snapUri, { agent: agent, timeout: 10000 });
 					this.homey.app.updateLog(`SnapShot fetch result (${this.name}): Status: ${res.ok}, Message: ${res.statusText}, Code: ${res.status}\r\n`, 1);
+					if (res.ok && this.isInvalidSnapshotResponse(res))
+					{
+						res = this.markInvalidSnapshotResponse(res, name);
+					}
 					if (!res.ok)
 					{
 						// Try Basic Authentication
@@ -2434,6 +2510,10 @@ class CameraDevice extends Homey.Device
 					const client = new DigestFetch(this.username, this.password, { basic: true, });
 					res = await client.fetch(this.snapUri, { agent: agent, timeout: 10000 });
 					this.homey.app.updateLog(`SnapShot fetch result (${this.name}): Status: ${res.ok}, Message: ${res.statusText}, Code: ${res.status}\r\n`, 1);
+					if (res.ok && this.isInvalidSnapshotResponse(res))
+					{
+						res = this.markInvalidSnapshotResponse(res, name);
+					}
 					if (!res.ok)
 					{
 						// Try Digest Authentication
@@ -2472,6 +2552,10 @@ class CameraDevice extends Homey.Device
 					const client = new DigestFetch(this.username, this.password, { algorithm: 'MD5' });
 					res = await client.fetch(this.snapUri, { agent: agent, timeout: 10000 });
 					this.homey.app.updateLog(`SnapShot fetch result (${this.name}): Status: ${res.ok}, Message: ${res.statusText}, Code: ${res.status}\r\n`, 1);
+					if (res.ok && this.isInvalidSnapshotResponse(res))
+					{
+						res = this.markInvalidSnapshotResponse(res, name);
+					}
 					if (!res.ok)
 					{
 						// Go back to no Authentication

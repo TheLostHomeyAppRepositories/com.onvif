@@ -222,6 +222,7 @@
             "filter": "driver_id=camera&capabilities=alarm_visitor"
           }
         ],
+        "deprecated": true,
         "id": "alarm_vistor_true"
       },
       {

@@ -1949,11 +1949,17 @@ class CameraDevice extends Homey.Device
 		}
 
 		// If this event doesn't clear, set a timer to clear it
-		this.homey.clearTimeout(this.visitorTimeoutId || this.vistorTimeoutId);
+		this.homey.clearTimeout(this.visitorTimeoutId);
 		if (dataValue)
 		{
 			this.homey.app.updateLog('Triggering event (' + this.name + ') Visitor Detected = ' + dataValue, 1);
-			(this.driver.eventVisitorTrigger || this.driver.eventVistorTrigger)
+			(this.driver.eventVisitorTrigger)
+				.trigger(this)
+				.catch(this.error)
+				.then(() => this.log('Triggered enable on'));
+
+			// Keep for backwards compatibility with older versions of the app that had a typo in the trigger name
+			(this.driver.eventVistorTrigger)
 				.trigger(this)
 				.catch(this.error)
 				.then(() => this.log('Triggered enable on'));
@@ -1969,15 +1975,7 @@ class CameraDevice extends Homey.Device
 				this.triggerMotionEvent('Visitor Detected', false).catch(this.err);
 				this.homey.app.updateLog('Visitor Detected off (' + this.name + ')', 1);
 			}, 15000);
-
-			// Keep legacy property updated for backward compatibility in long-lived runtime state.
-			this.vistorTimeoutId = this.visitorTimeoutId;
 		}
-	}
-
-	async triggerVistorEvent(dataValue)
-	{
-		return this.triggerVisitorEvent(dataValue);
 	}
 
 	async triggerFaceEvent(dataValue)
@@ -2668,8 +2666,6 @@ class CameraDevice extends Homey.Device
 		this.dogCatTimeoutId = null;
 		this.homey.clearTimeout(this.visitorTimeoutId);
 		this.visitorTimeoutId = null;
-		this.homey.clearTimeout(this.vistorTimeoutId);
-		this.vistorTimeoutId = null;
 		this.homey.clearTimeout(this.faceTimeoutId);
 		this.faceTimeoutId = null;
 		this.homey.clearTimeout(this.vehicleTimeoutId);

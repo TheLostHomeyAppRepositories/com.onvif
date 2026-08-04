@@ -6,19 +6,6 @@ const Homey = require('homey');
 
 class CameraDriver extends Homey.Driver
 {
-	getDeviceTriggerCardWithFallback(primaryId, fallbackId)
-	{
-		try
-		{
-			return this.homey.flow.getDeviceTriggerCard(primaryId);
-		}
-		catch (err)
-		{
-			this.homey.app.updateLog('Trigger card not found: ' + primaryId + ', using fallback ' + fallbackId, 1);
-			return this.homey.flow.getDeviceTriggerCard(fallbackId);
-		}
-	}
-
 	onInit()
 	{
 		this.log('CameraDriver has been inited');
@@ -39,8 +26,8 @@ class CameraDriver extends Homey.Driver
 		this.eventSoundTrigger = this.homey.flow.getDeviceTriggerCard('alarm_sound_true');
 		this.eventStorageTrigger = this.homey.flow.getDeviceTriggerCard('alarm_storage_true');
 		this.eventVehicleTrigger = this.homey.flow.getDeviceTriggerCard('alarm_vehicle_true');
-		this.eventVisitorTrigger = this.getDeviceTriggerCardWithFallback('alarm_visitor_true', 'alarm_vistor_true');
-		this.eventVistorTrigger = this.eventVisitorTrigger;
+		this.eventVisitorTrigger = this.homey.flow.getDeviceTriggerCard('alarm_visitor_true');
+		this.eventVistorTrigger = this.homey.flow.getDeviceTriggerCard('alarm_vistor_true');	// Keep for backwards compatibility with older versions of the app that had a typo in the trigger name
 	}
 
 	async onPair(session)

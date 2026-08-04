@@ -8,5 +8,6 @@
         "name": "device",
         "filter": "driver_id=camera&capabilities=alarm_visitor"
         }
-    ]
+    ],
+	"deprecated": true
 }

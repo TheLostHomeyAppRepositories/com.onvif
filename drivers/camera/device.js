@@ -11,7 +11,9 @@ const fs = require('fs');
 const {
 	EVENT_METRIC_HANDLERS,
 	createEventCompareHandlers,
-	createEventSpecialHandlers
+	createEventSpecialHandlers,
+	eventMatchesActiveSource,
+	getEventSourceTokens
 } = require('./event-routing');
 
 const APP_LOCALES = {
@@ -622,25 +624,20 @@ class CameraDevice extends Homey.Device
 			return true;
 		}
 
-		let eventSource = camMessage.message?.message.source.simpleItem;
-		if (Array.isArray(eventSource))
+		const eventSource = camMessage.message?.message.source.simpleItem;
+		const eventTokens = getEventSourceTokens(eventSource);
+		if (eventTokens.length > 0)
 		{
-			eventSource = eventSource[0];
-		}
+			const activeSource = this.cam?.activeSource;
+			const activeTokens = [this.token, activeSource?.sourceToken, activeSource?.videoSourceConfigurationToken]
+				.filter(Boolean);
+			this.homey.app.updateLog(`*** Event token(s) ${eventTokens.join(', ')}, channel token(s) ${activeTokens.join(', ')} `, 1);
 
-		if (eventSource?.$)
-		{
-			this.homey.app.updateLog(`*** Event token ${eventSource.$.Value}, channel token ${this.token} `, 1);
-
-			if ((eventSource.$.Name == 'VideoSourceConfigurationToken') ||
-				(eventSource.$.Name == 'Source'))
+			if (!eventMatchesActiveSource(eventSource, this.token, activeSource))
 			{
-				if (eventSource.$.Value !== this.token)
-				{
-					// Different channel so ignore this event
-					this.homey.app.updateLog(`Event Ignored on this channel:\r\n${this.homey.app.varToString(dataSource)}\r\n`, 1);
-					return false;
-				}
+				// Different channel so ignore this event
+				this.homey.app.updateLog(`Event Ignored on this channel:\r\n${this.homey.app.varToString(dataSource)}\r\n`, 1);
+				return false;
 			}
 
 			return true;

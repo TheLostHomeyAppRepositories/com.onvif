@@ -4,11 +4,40 @@ const assert = require('assert');
 const {
 	EVENT_METRIC_HANDLERS,
 	createEventCompareHandlers,
-	createEventSpecialHandlers
+	createEventSpecialHandlers,
+	eventMatchesActiveSource,
+	getEventSourceTokens
 } = require('../drivers/camera/event-routing');
 
 async function runTests()
 {
+	const activeSource = {
+		sourceToken: 'VideoSourceToken003',
+		videoSourceConfigurationToken: 'VideoSourceConfigurationToken003'
+	};
+	const analyticsSource = [
+		{ $: { Name: 'VideoSourceConfigurationToken', Value: 'VideoSourceConfigurationToken003' } },
+		{ $: { Name: 'VideoAnalyticsConfigurationToken', Value: 'VideoAnalyticsConfigurationToken003' } },
+		{ $: { Name: 'Rule', Value: 'MyMotionDetectorRule' } }
+	];
+	assert.deepStrictEqual(getEventSourceTokens(analyticsSource), ['VideoSourceConfigurationToken003']);
+	assert.strictEqual(eventMatchesActiveSource(analyticsSource, 'VideoSourceToken003', activeSource), true);
+	assert.strictEqual(eventMatchesActiveSource(
+		{ $: { Name: 'Source', Value: 'VideoSourceToken003' } },
+		'VideoSourceToken003',
+		activeSource
+	), true);
+	assert.strictEqual(eventMatchesActiveSource(
+		{ $: { Name: 'Source', Value: 'VideoSourceToken004' } },
+		'VideoSourceToken003',
+		activeSource
+	), false);
+	assert.strictEqual(eventMatchesActiveSource(
+		{ $: { Name: 'Rule', Value: 'MyMotionDetectorRule' } },
+		'VideoSourceToken003',
+		activeSource
+	), true);
+
 	// Metric handler table checks
 	assert.ok(EVENT_METRIC_HANDLERS['Monitoring/ProcessorUsage:Value']);
 	assert.ok(EVENT_METRIC_HANDLERS['Device/HardwareFailure/StorageFailure:Failed']);

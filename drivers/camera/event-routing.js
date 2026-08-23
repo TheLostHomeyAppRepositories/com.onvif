@@ -1,5 +1,7 @@
 'use strict';
 
+const EVENT_SOURCE_TOKEN_NAMES = ['Source', 'VideoSourceConfigurationToken'];
+
 const EVENT_METRIC_HANDLERS = {
 	'Monitoring/ProcessorUsage:Value': {
 		optionalCapability: 'cpu',
@@ -36,8 +38,41 @@ function createEventSpecialHandlers(device)
 	};
 }
 
+function getEventSourceTokens(eventSource)
+{
+	const sourceItems = Array.isArray(eventSource) ? eventSource : [eventSource];
+
+	return sourceItems
+		.filter((sourceItem) => sourceItem?.$ && EVENT_SOURCE_TOKEN_NAMES.indexOf(sourceItem.$.Name) >= 0)
+		.map((sourceItem) => sourceItem.$.Value);
+}
+
+function eventMatchesActiveSource(eventSource, configuredToken, activeSource)
+{
+	if (!configuredToken)
+	{
+		return true;
+	}
+
+	const eventTokens = getEventSourceTokens(eventSource);
+	if (eventTokens.length === 0)
+	{
+		return true;
+	}
+
+	const activeTokens = [
+		configuredToken,
+		activeSource?.sourceToken,
+		activeSource?.videoSourceConfigurationToken
+	].filter(Boolean);
+
+	return eventTokens.some((eventToken) => activeTokens.indexOf(eventToken) >= 0);
+}
+
 module.exports = {
 	EVENT_METRIC_HANDLERS,
 	createEventCompareHandlers,
-	createEventSpecialHandlers
+	createEventSpecialHandlers,
+	eventMatchesActiveSource,
+	getEventSourceTokens
 };

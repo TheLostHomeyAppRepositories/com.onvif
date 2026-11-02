@@ -1418,7 +1418,7 @@ class CameraDevice extends Homey.Device
 
 				this.isReady = true;
 				this.setCapabilityValue('alarm_tamper', false).catch(this.error);
-				this.homey.app.updateLog('Camera (' + this.name + ') ' + this.homey.app.varToString(this.cam), 3);
+				this.homey.app.updateLog('Camera (' + this.name + ') ' + this.homey.app.maskSensitive(this.cam, this.password), 3);
 				this.homey.app.updateLog('Camera (' + this.name + ') is ready');
 			}
 			catch (err)
@@ -1598,7 +1598,7 @@ class CameraDevice extends Homey.Device
 			);
 			return;
 		}
-		this.homey.app.updateLog('Event snapshot URL (' + this.getLogDeviceLabel() + '): ' + this.homey.app.varToString(this.snapUri).replace(this.password, 'YOUR_PASSWORD'));
+		this.homey.app.updateLog('Event snapshot URL (' + this.getLogDeviceLabel() + '): ' + this.homey.app.maskSensitive(this.snapUri, this.password));
 
 		let res = await this.doFetch('MOTION EVENT');
 		if (!res.ok)
@@ -2243,7 +2243,7 @@ class CameraDevice extends Homey.Device
 					this.homey.app.updateLog(`Live video stream to URL: ${newUrl}`);
 					newUrl = this.buildAuthenticatedStreamUrl(newUrl);
 
-					this.homey.app.updateLog(`Setting Live video stream to ${newUrl.replace(this.password, 'YOUR_PASSWORD')}`);
+					this.homey.app.updateLog(`Setting Live video stream to ${this.homey.app.maskSensitive(newUrl, this.password)}`);
 					this.homey.app.updateLog('Live video stream URL registered with Homey; playback is validated by the client when opened', 1);
 					return { url: newUrl };
 				});
@@ -2296,7 +2296,7 @@ class CameraDevice extends Homey.Device
 					this.snapUri = null;
 					this.logSnapshotIssue(
 						'invalid_snapshot_url',
-						uri ? ('Invalid Snapshot URL (' + this.getLogDeviceLabel() + '), it must be http or https: ' + this.homey.app.varToString(uri).replace(this.password, 'YOUR_PASSWORD')) : ('Invalid Snapshot URL (' + this.getLogDeviceLabel() + '): camera did not return a snapshot URI'),
+						uri ? ('Invalid Snapshot URL (' + this.getLogDeviceLabel() + '), it must be http or https: ' + this.homey.app.maskSensitive(uri, this.password)) : ('Invalid Snapshot URL (' + this.getLogDeviceLabel() + '): camera did not return a snapshot URI'),
 						0,
 						300000
 					);
@@ -2323,7 +2323,7 @@ class CameraDevice extends Homey.Device
 			//     }
 			// }
 
-			const publicSnapURL = this.snapUri.replace(this.password, 'YOUR_PASSWORD');
+			const publicSnapURL = this.homey.app.maskSensitive(this.snapUri, this.password);
 			await this.setSettings(
 				{
 					'url': publicSnapURL
@@ -2470,7 +2470,7 @@ class CameraDevice extends Homey.Device
 			{
 				if (this.authType == 0)
 				{
-					this.homey.app.updateLog('Fetching (' + this.name + ') ' + name + ' image with no Auth from: ' + this.homey.app.varToString(this.snapUri).replace(this.password, 'YOUR_PASSWORD'), 1);
+					this.homey.app.updateLog('Fetching (' + this.name + ') ' + name + ' image with no Auth from: ' + this.homey.app.maskSensitive(this.snapUri, this.password), 1);
 					res = await fetch(this.snapUri, { agent: agent, timeout: 10000 });
 					this.homey.app.updateLog(`SnapShot fetch result (${this.name}): Status: ${res.ok}, Message: ${res.statusText}, Code: ${res.status}\r\n`, 1);
 					if (res.ok && this.isInvalidSnapshotResponse(res))
@@ -2510,7 +2510,7 @@ class CameraDevice extends Homey.Device
 			{
 				if (this.authType == 1)
 				{
-					this.homey.app.updateLog('Fetching (' + this.name + ') ' + name + ' image with Basic Auth. From: ' + this.homey.app.varToString(this.snapUri).replace(this.password, 'YOUR_PASSWORD'), 1);
+					this.homey.app.updateLog('Fetching (' + this.name + ') ' + name + ' image with Basic Auth. From: ' + this.homey.app.maskSensitive(this.snapUri, this.password), 1);
 
 					const client = new DigestFetch(this.username, this.password, { basic: true, });
 					res = await client.fetch(this.snapUri, { agent: agent, timeout: 10000 });
@@ -2552,7 +2552,7 @@ class CameraDevice extends Homey.Device
 			{
 				if (this.authType >= 2)
 				{
-					this.homey.app.updateLog('Fetching (' + this.name + ') ' + name + ' image with Digest Auth. From: ' + this.homey.app.varToString(this.snapUri).replace(this.password, 'YOUR_PASSWORD'), 1);
+					this.homey.app.updateLog('Fetching (' + this.name + ') ' + name + ' image with Digest Auth. From: ' + this.homey.app.maskSensitive(this.snapUri, this.password), 1);
 
 					const client = new DigestFetch(this.username, this.password, { algorithm: 'MD5' });
 					res = await client.fetch(this.snapUri, { agent: agent, timeout: 10000 });

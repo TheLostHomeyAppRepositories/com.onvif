@@ -478,5 +478,8 @@
 	},
 	"2.0.72": {
 		"en": "Add routeLineCrossedStateEvent and update event handlers."
+	},
+	"2.0.73": {
+		"en": "Enhanced diagnostic logging by masking sensitive information and improving the log flushing mechanism."
 	}
 }
